@@ -23,7 +23,7 @@ class CategoryImpl implements ICategoryFacade {
 
       final category = categoryModel.copyWith(id: id);
 
-      await categoryRef.doc().set(category.toMap());
+      await categoryRef.doc(id).set(category.toMap());
 
       return right(category);
     } catch (e) {
@@ -61,3 +61,6 @@ class CategoryImpl implements ICategoryFacade {
     }
   }
 }
+
+
+

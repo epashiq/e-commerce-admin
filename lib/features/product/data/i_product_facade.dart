@@ -7,7 +7,7 @@ abstract class IProductFacade {
     throw UnimplementedError('error');
   }
 
-  Future<Either<MainFailure,List<ProductModel>>> fetchProducts()async{
+  Future<Either<MainFailure,List<ProductModel>>> fetchProducts(String categoryId)async{
     throw UnimplementedError('error');
   }
 }

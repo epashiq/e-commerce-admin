@@ -23,7 +23,7 @@ class ProductImpl implements IProductFacade {
 
       final product = productModel.copyWith(id: id);
 
-      await productRef.doc().set(product.toMap());
+      await productRef.doc(id).set(product.toMap());
 
       return right(product);
     } catch (e) {
@@ -32,10 +32,12 @@ class ProductImpl implements IProductFacade {
   }
 
   @override
-  Future<Either<MainFailure, List<ProductModel>>> fetchProducts() async {
+  Future<Either<MainFailure, List<ProductModel>>> fetchProducts(
+      String categoryId) async {
     try {
       Query query = firebaseFirestore
           .collection('products')
+          .where('categoryId', isEqualTo: categoryId)
           .orderBy('product', descending: false);
 
       if (lastDocument != null) {

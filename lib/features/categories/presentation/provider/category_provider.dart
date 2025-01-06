@@ -26,6 +26,7 @@ class CategoryProvider with ChangeNotifier {
       },
       (success) {
         log('Add category succesfully');
+        addLocally(success);
       },
     );
   }
@@ -46,6 +47,16 @@ class CategoryProvider with ChangeNotifier {
     );
 
     isLoading = false;
+    notifyListeners();
+  }
+
+  void addLocally(CategoryModel category) {
+    categoryList.insert(0, category);
+    notifyListeners();
+  }
+
+  void clearCategoryList() {
+    categoryList = [];
     notifyListeners();
   }
 }

@@ -1,3 +1,4 @@
+import 'package:e_commerce_admin/features/details/presentation/view/detail_page.dart';
 import 'package:e_commerce_admin/features/product/presentation/provider/product_provider.dart';
 import 'package:e_commerce_admin/features/product/presentation/view/widgets/custom_text_field_widget.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _AddProductPageState extends State<AddProductPage> {
         Provider.of<ProductProvider>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      productProvider.fetchProducts();
+      productProvider.fetchProducts(widget.categoryId);
       productProvider.clearExpenseList();
     });
   }
@@ -38,7 +39,13 @@ class _AddProductPageState extends State<AddProductPage> {
           } else if (product.productList.isEmpty) {
             return const Text('No products available');
           } else {
-            return ListView.builder(
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
+                childAspectRatio: 3,
+              ),
               itemCount: product.productList.length,
               itemBuilder: (context, index) {
                 final pro = product.productList[index];
@@ -48,15 +55,31 @@ class _AddProductPageState extends State<AddProductPage> {
                   offerPrice: pro.offerPrize.toInt(),
                 );
 
-                return Card(
-                  child: Column(
-                    children: [
-                      Text('Product: ${pro.product}'),
-                      Text('MRP: \$${pro.mrpPrize}'),
-                      Text('Offer Price: \$${pro.offerPrize}'),
-                      Text(
-                          'Discount: ${discountPercentage.toStringAsFixed(2)}%'),
-                    ],
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPage(
+                            productId: pro.id!,
+                          ),
+                        ));
+                  },
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Product: ${pro.product}'),
+                        Text('MRP: \$${pro.mrpPrize}'),
+                        Text('Offer Price: \$${pro.offerPrize}'),
+                        Text(
+                            'Discount: ${discountPercentage.toStringAsFixed(2)}%'),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -75,31 +98,35 @@ class _AddProductPageState extends State<AddProductPage> {
                   children: [
                     CustomTextField(
                       controller: productProvider.productController,
-                      hintText: 'products',
+                      hintText: 'Product Name',
                     ),
                     CustomTextField(
                       controller: productProvider.offerPrizeController,
-                      hintText: 'offer prize',
+                      hintText: 'Offer Price',
                     ),
                     CustomTextField(
                       controller: productProvider.mrpPrizeController,
-                      hintText: 'mrp prize',
+                      hintText: 'MRP Price',
                     ),
                     CustomTextField(
                       controller: productProvider.descreptionController,
-                      hintText: 'descreption',
+                      hintText: 'Description',
                     ),
                     CustomTextField(
                       controller: productProvider.stockController,
                       hintText: 'Stock',
                     ),
                     CustomTextField(
-                      hintText: 'colour',
+                      hintText: 'Color',
                       controller: productProvider.colourController,
                     ),
                     CustomTextField(
-                      hintText: 'colour',
+                      hintText: 'Material',
                       controller: productProvider.materialController,
+                    ),
+                    CustomTextField(
+                      hintText: 'Production',
+                      controller: productProvider.productionController,
                     )
                   ],
                 ),
@@ -107,10 +134,12 @@ class _AddProductPageState extends State<AddProductPage> {
                   TextButton(
                       onPressed: () {
                         productProvider.addProduct(
-                            categoryId: widget.categoryId,
-                            colour: productProvider.colourController.text,
-                            material: productProvider.materialController.text);
-
+                          colour: productProvider.colourController.text,
+                          material: productProvider.materialController.text,
+                          production: productProvider.productController.text,
+                          categoryId: widget.categoryId,
+                        );
+                        // PopScopeLoad.addShowDialog(context, 'Add product');
                         Navigator.pop(context);
                       },
                       child: const Text('Add')),
@@ -118,7 +147,7 @@ class _AddProductPageState extends State<AddProductPage> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text('cancel')),
+                      child: const Text('Cancel')),
                 ],
               );
             },

@@ -1,3 +1,4 @@
+
 import 'package:e_commerce_admin/features/categories/presentation/provider/category_provider.dart';
 import 'package:e_commerce_admin/features/product/presentation/add_product_page.dart';
 import 'package:e_commerce_admin/features/product/presentation/view/widgets/custom_text_field_widget.dart';
@@ -20,6 +21,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       categoryProvider.fetchCategories();
+      categoryProvider.clearCategoryList();
     });
   }
 
@@ -39,7 +41,14 @@ class _CategoryPageState extends State<CategoryPage> {
               child: Text('No category available'),
             );
           } else {
-            return ListView.builder(
+            return GridView.builder(
+              padding: const EdgeInsets.all(8.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // Number of columns in the grid
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 3 / 2, // Adjust the aspect ratio as needed
+              ),
               itemCount: category.categoryList.length,
               itemBuilder: (context, index) {
                 final cat = category.categoryList[index];
@@ -49,11 +58,24 @@ class _CategoryPageState extends State<CategoryPage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>  AddProductPage(categoryId: cat.id!,),
+                            builder: (context) => AddProductPage(
+                              categoryId: cat.id!,
+                            ),
                           ));
                     },
-                    child: ListTile(
-                      title: Text(cat.name),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 8.0),
+                        Text(
+                          cat.name,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -68,7 +90,7 @@ class _CategoryPageState extends State<CategoryPage> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: const Text('Add Catgories'),
+                title: const Text('Add Categories'),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -83,7 +105,7 @@ class _CategoryPageState extends State<CategoryPage> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text('cancel')),
+                      child: const Text('Cancel')),
                   TextButton(
                       onPressed: () {
                         categoryProvider.addCategory();
